@@ -1,0 +1,29 @@
+{
+    "name": "pushstream/pushstream-php",
+    "description": "PushStream PHP SDK for real-time messaging",
+    "type": "library",
+    "keywords": ["websocket", "realtime", "pusher", "messaging", "laravel"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "PushStream",
+            "email": "support@pushstream.io"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "ext-curl": "*",
+        "ext-json": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "PushStream\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PushStream\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable"
+}
