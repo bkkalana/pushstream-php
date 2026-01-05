@@ -14,7 +14,7 @@ class PushStream
         $this->appId = $appId;
         $this->appKey = $appKey;
         $this->appSecret = $appSecret;
-        $this->apiUrl = $options['apiUrl'] ?? 'https://api.pushstream.io';
+        $this->apiUrl = $options['apiUrl'] ?? 'https://api.pushstream.ceylonitsolutions.online';
     }
 
     /**

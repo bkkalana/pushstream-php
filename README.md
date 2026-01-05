@@ -52,7 +52,7 @@ php artisan vendor:publish --tag=pushstream-config
 PUSHSTREAM_APP_ID=your-app-id
 PUSHSTREAM_APP_KEY=your-app-key
 PUSHSTREAM_APP_SECRET=your-app-secret
-PUSHSTREAM_API_URL=https://api.pushstream.io
+PUSHSTREAM_API_URL=https://api.pushstream.ceylonitsolutions.online
 ```
 
 #### 4. Register Service Provider (Laravel < 11)
@@ -100,7 +100,7 @@ new PushStream($appId, $appKey, $appSecret, $options = [])
 ```
 
 **Options:**
-- `apiUrl` - API endpoint (default: `https://api.pushstream.io`)
+- `apiUrl` - API endpoint (default: `https://api.pushstream.ceylonitsolutions.online`)
 
 ### Methods
 
