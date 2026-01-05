@@ -42,6 +42,7 @@ class PushStream
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $body,
+            CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTPHEADER => [
                 'Authorization: ' . $authHeader,
                 'Content-Type: application/json'
@@ -79,6 +80,7 @@ class PushStream
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $body,
+            CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTPHEADER => [
                 'Authorization: ' . $authHeader,
                 'Content-Type: application/json'
