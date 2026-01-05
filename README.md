@@ -40,6 +40,8 @@ $pushstream->publish('my-channel', 'order.created', [
 composer require pushstream/pushstream-php
 ```
 
+> **Note:** The service provider is auto-discovered in Laravel 11+
+
 #### 2. Publish Config
 
 ```bash
@@ -55,23 +57,9 @@ PUSHSTREAM_APP_SECRET=your-app-secret
 PUSHSTREAM_API_URL=https://api.pushstream.ceylonitsolutions.online
 ```
 
-#### 4. Register Service Provider (Laravel < 11)
+#### 4. Use Facade
 
-Add to `config/app.php`:
-
-```php
-'providers' => [
-    // ...
-    PushStream\Laravel\PushStreamServiceProvider::class,
-],
-
-'aliases' => [
-    // ...
-    'PushStream' => PushStream\Laravel\PushStreamFacade::class,
-],
-```
-
-#### 5. Use Facade
+> **Note:** Laravel 11+ auto-discovers the service provider. For Laravel < 11, manually register in `config/app.php`
 
 ```php
 <?php

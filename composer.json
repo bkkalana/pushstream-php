@@ -25,5 +25,15 @@
             "PushStream\\Tests\\": "tests/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "PushStream\\Laravel\\PushStreamServiceProvider"
+            ],
+            "aliases": {
+                "PushStream": "PushStream\\Laravel\\PushStreamFacade"
+            }
+        }
+    },
     "minimum-stability": "stable"
 }
