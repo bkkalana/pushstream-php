@@ -54,7 +54,7 @@ php artisan vendor:publish --tag=pushstream-config
 PUSHSTREAM_APP_ID=your-app-id
 PUSHSTREAM_APP_KEY=your-app-key
 PUSHSTREAM_APP_SECRET=your-app-secret
-PUSHSTREAM_API_URL=http://localhost:8000
+PUSHSTREAM_API_URL=https://api.pushstream.ceylonitsolutions.online
 ```
 
 #### 4. Use Facade
@@ -88,7 +88,7 @@ new PushStream($appId, $appKey, $appSecret, $options = [])
 ```
 
 **Options:**
-- `apiUrl` - API endpoint (default: `http://localhost:8000`)
+- `apiUrl` - API endpoint (default: `https://api.pushstream.ceylonitsolutions.online`)
 
 ### Methods
 
