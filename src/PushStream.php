@@ -14,7 +14,7 @@ class PushStream
         $this->appId = $appId;
         $this->appKey = $appKey;
         $this->appSecret = $appSecret;
-        $this->apiUrl = $options['apiUrl'] ?? 'https://api.pushstream.ceylonitsolutions.online';
+        $this->apiUrl = $options['apiUrl'] ?? 'http://localhost:8000';
     }
 
     /**
@@ -23,10 +23,14 @@ class PushStream
     public function publish($channel, $event, $data, $socketId = null)
     {
         $timestamp = time();
+        
+        // Ensure data is a string
+        $dataString = is_string($data) ? $data : json_encode($data);
+        
         $body = json_encode([
             'name' => $event,
             'channel' => $channel,
-            'data' => $data,
+            'data' => $dataString,
             'socket_id' => $socketId
         ]);
 

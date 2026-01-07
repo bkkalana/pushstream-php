@@ -47,7 +47,7 @@ Add to `.env`:
 PUSHSTREAM_APP_ID=your-app-id
 PUSHSTREAM_APP_KEY=your-app-key
 PUSHSTREAM_APP_SECRET=your-app-secret
-PUSHSTREAM_API_URL=https://api.pushstream.ceylonitsolutions.online
+PUSHSTREAM_API_URL=http://localhost:8000
 ```
 
 ### 4. Use in Your Code

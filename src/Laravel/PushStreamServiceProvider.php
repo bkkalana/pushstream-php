@@ -16,7 +16,7 @@ class PushStreamServiceProvider extends ServiceProvider
                 $config['app_id'],
                 $config['app_key'],
                 $config['app_secret'],
-                ['apiUrl' => $config['api_url'] ?? 'https://api.pushstream.ceylonitsolutions.online']
+                ['apiUrl' => $config['api_url'] ?? 'http://localhost:8000']
             );
         });
 
