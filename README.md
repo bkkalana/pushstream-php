@@ -1,6 +1,21 @@
-# PushStream PHP SDK
+# PushStream PHP SDK (`sdks` Edition)
 
-Official PHP SDK for PushStream real-time messaging platform.
+PHP SDK for PushStream event publishing, batch publishing, and channel auth signature generation.
+
+## Source
+
+- File: `sdks/pushstream-php/src/PushStream.php`
+- Class: `PushStream\PushStream`
+
+## Compatibility
+
+This SDK matches current PushStream protocol:
+
+- Event endpoint: `POST /api/apps/{app_id}/events`
+- Batch endpoint: `POST /api/apps/{app_id}/batch_events`
+- Publish auth header: `Authorization: {app_id}:{signature}`
+- Batch `data` normalized as JSON string
+- Channel auth result format: `{app_id}:{signature}`
 
 ## Installation
 
@@ -8,9 +23,7 @@ Official PHP SDK for PushStream real-time messaging platform.
 composer require pushstream/pushstream-php
 ```
 
-## Usage
-
-### Basic Usage
+## Quick Start
 
 ```php
 <?php
@@ -19,262 +32,66 @@ require 'vendor/autoload.php';
 
 use PushStream\PushStream;
 
-$pushstream = new PushStream(
-    'your-app-id',
-    'your-app-key',
-    'your-app-secret'
-);
+$client = new PushStream('APP_ID', 'APP_KEY', 'APP_SECRET');
 
-// Publish event
-$pushstream->publish('my-channel', 'order.created', [
-    'order_id' => 123,
-    'amount' => 99.99
-]);
+$response = $client->publish('orders', 'order.created', ['id' => 1]);
+print_r($response);
 ```
 
-### Laravel Integration
-
-#### 1. Install Package
-
-```bash
-composer require pushstream/pushstream-php
-```
-
-> **Note:** The service provider is auto-discovered in Laravel 11+
-
-#### 2. Publish Config
-
-```bash
-php artisan vendor:publish --tag=pushstream-config
-```
-
-#### 3. Configure `.env`
-
-```env
-PUSHSTREAM_APP_ID=your-app-id
-PUSHSTREAM_APP_KEY=your-app-key
-PUSHSTREAM_APP_SECRET=your-app-secret
-PUSHSTREAM_API_URL=https://api.pushstream.ceylonitsolutions.online
-```
-
-#### 4. Use Facade
-
-> **Note:** Laravel 11+ auto-discovers the service provider. For Laravel < 11, manually register in `config/app.php`
-
-```php
-<?php
-
-use PushStream\Laravel\PushStreamFacade as PushStream;
-
-// Publish event
-PushStream::publish('orders', 'order.created', [
-    'order_id' => 123,
-    'amount' => 99.99
-]);
-
-// Publish batch
-PushStream::publishBatch([
-    ['channel' => 'orders', 'name' => 'order.created', 'data' => ['id' => 1]],
-    ['channel' => 'users', 'name' => 'user.updated', 'data' => ['id' => 2]],
-]);
-```
-
-## API Reference
-
-### Constructor
+## Constructor
 
 ```php
 new PushStream($appId, $appKey, $appSecret, $options = [])
 ```
 
-**Options:**
-- `apiUrl` - API endpoint (default: `https://api.pushstream.ceylonitsolutions.online`)
+Options:
 
-### Methods
+- `apiUrl` (default `https://api.pushstream.ceylonitsolutions.online`)
 
-#### publish()
+## API
 
-Publish an event to a channel.
+### `publish($channel, $event, $data, $socketId = null)`
 
-```php
-$pushstream->publish($channel, $event, $data, $socketId = null)
-```
+Publish a single event.
 
-**Parameters:**
-- `$channel` (string) - Channel name
-- `$event` (string) - Event name
-- `$data` (array) - Event data
-- `$socketId` (string|null) - Exclude this socket from receiving the event
+### `publishBatch($events)`
 
-**Returns:** `array` - API response
+Publish multiple events in one request.
 
-#### publishBatch()
-
-Publish multiple events in a single request.
+Example:
 
 ```php
-$pushstream->publishBatch($events)
-```
-
-**Parameters:**
-- `$events` (array) - Array of events
-
-**Example:**
-```php
-$pushstream->publishBatch([
-    ['channel' => 'orders', 'name' => 'order.created', 'data' => ['id' => 1]],
-    ['channel' => 'users', 'name' => 'user.updated', 'data' => ['id' => 2]],
+$client->publishBatch([
+  ['name' => 'order.created', 'channel' => 'orders', 'data' => ['id' => 1]],
+  ['name' => 'order.updated', 'channel' => 'orders', 'data' => ['id' => 1, 'status' => 'paid']],
 ]);
 ```
 
-#### authorizeChannel()
+### `authorizeChannel($socketId, $channel, $userData = null)`
 
-Authenticate private/presence channel.
+Generate auth payload for private/presence channels.
 
-```php
-$pushstream->authorizeChannel($socketId, $channel, $userData = null)
-```
-
-**Parameters:**
-- `$socketId` (string) - Socket ID from client
-- `$channel` (string) - Channel name
-- `$userData` (array|null) - User data for presence channels
-
-**Returns:** `array` - Auth response
-
-**Example:**
-```php
-// Private channel
-$auth = $pushstream->authorizeChannel($socketId, 'private-user-123');
-
-// Presence channel
-$auth = $pushstream->authorizeChannel($socketId, 'presence-chat', [
-    'user_id' => 123,
-    'user_info' => ['name' => 'John Doe']
-]);
-```
-
-#### verifyWebhook()
-
-Verify webhook signature.
+Example:
 
 ```php
-$pushstream->verifyWebhook($signature, $body)
+$auth = $client->authorizeChannel(
+  '123.456',
+  'presence-org-1-chat',
+  ['user_id' => 1001, 'user_info' => ['name' => 'Kamal']]
+);
 ```
 
-**Parameters:**
-- `$signature` (string) - Signature from webhook header
-- `$body` (string) - Raw request body
+### `verifyWebhook($signature, $body)`
 
-**Returns:** `bool` - True if valid
+Verify webhook signature using app secret.
 
-**Example:**
-```php
-$signature = $_SERVER['HTTP_X_PUSHSTREAM_SIGNATURE'];
-$body = file_get_contents('php://input');
+## Security Guidance
 
-if ($pushstream->verifyWebhook($signature, $body)) {
-    // Process webhook
-}
-```
+- Keep `APP_SECRET` server-side only.
+- Never expose secret in browser/mobile client code.
 
-## Laravel Examples
+## Migration Recommendation
 
-### Controller
+For actively maintained package and cleaner API, use canonical SDK:
 
-```php
-<?php
-
-namespace App\Http\Controllers;
-
-use PushStream\Laravel\PushStreamFacade as PushStream;
-
-class OrderController extends Controller
-{
-    public function store(Request $request)
-    {
-        $order = Order::create($request->all());
-        
-        // Publish event
-        PushStream::publish('orders', 'order.created', [
-            'order_id' => $order->id,
-            'amount' => $order->amount,
-            'created_at' => $order->created_at
-        ]);
-        
-        return response()->json($order);
-    }
-}
-```
-
-### Channel Authorization
-
-```php
-<?php
-
-// routes/web.php
-use PushStream\Laravel\PushStreamFacade as PushStream;
-
-Route::post('/pusher/auth', function (Request $request) {
-    $socketId = $request->input('socket_id');
-    $channel = $request->input('channel_name');
-    
-    // Authorize private channel
-    if (str_starts_with($channel, 'private-')) {
-        return PushStream::authorizeChannel($socketId, $channel);
-    }
-    
-    // Authorize presence channel
-    if (str_starts_with($channel, 'presence-')) {
-        return PushStream::authorizeChannel($socketId, $channel, [
-            'user_id' => auth()->id(),
-            'user_info' => [
-                'name' => auth()->user()->name
-            ]
-        ]);
-    }
-    
-    return response()->json(['error' => 'Unauthorized'], 403);
-});
-```
-
-### Event Broadcasting
-
-```php
-<?php
-
-namespace App\Events;
-
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-
-class OrderCreated implements ShouldBroadcast
-{
-    public $order;
-    
-    public function __construct($order)
-    {
-        $this->order = $order;
-    }
-    
-    public function broadcastOn()
-    {
-        return new Channel('orders');
-    }
-    
-    public function broadcastAs()
-    {
-        return 'order.created';
-    }
-}
-```
-
-## Requirements
-
-- PHP >= 7.4
-- ext-curl
-- ext-json
-
-## License
-
-MIT
+- `sdk/pushstream-php/README.md`

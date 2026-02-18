@@ -70,7 +70,16 @@ class PushStream
     public function publishBatch($events)
     {
         $timestamp = time();
-        $body = json_encode(['batch' => $events]);
+        $batch = array_map(function ($event) {
+            return [
+                'name' => $event['name'],
+                'channel' => $event['channel'],
+                'data' => is_string($event['data']) ? $event['data'] : json_encode($event['data']),
+                'socket_id' => $event['socket_id'] ?? null,
+            ];
+        }, $events);
+
+        $body = json_encode(['batch' => $batch]);
 
         $path = "/api/apps/{$this->appId}/batch_events";
         $queryString = "auth_timestamp={$timestamp}";
@@ -114,7 +123,7 @@ class PushStream
         }
 
         $signature = hash_hmac('sha256', $stringToSign, $this->appSecret);
-        $auth = "{$this->appKey}:{$signature}";
+        $auth = "{$this->appId}:{$signature}";
 
         $response = ['auth' => $auth];
         
