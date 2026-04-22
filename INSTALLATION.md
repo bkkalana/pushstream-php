@@ -1,108 +1,43 @@
-# PushStream PHP SDK - Installation Guide
+# PushStream PHP SDK Installation
 
-## ✅ Fixed Issue
-
-The `php artisan vendor:publish --tag=pushstream-config` command now works correctly.
-
-### What Was Fixed
-
-Added Laravel package auto-discovery configuration to `composer.json`:
-
-```json
-"extra": {
-    "laravel": {
-        "providers": [
-            "PushStream\\Laravel\\PushStreamServiceProvider"
-        ],
-        "aliases": {
-            "PushStream": "PushStream\\Laravel\\PushStreamFacade"
-        }
-    }
-}
-```
-
----
-
-## 📦 Installation Steps
-
-### 1. Install Package
+## Install
 
 ```bash
 composer require pushstream/pushstream-php
 ```
 
-### 2. Publish Configuration
+## Laravel Config Publish
 
 ```bash
 php artisan vendor:publish --tag=pushstream-config
 ```
 
-This creates `config/pushstream.php`
+This writes `config/pushstream.php`.
 
-### 3. Configure Environment
-
-Add to `.env`:
+## Environment
 
 ```env
 PUSHSTREAM_APP_ID=your-app-id
 PUSHSTREAM_APP_KEY=your-app-key
 PUSHSTREAM_APP_SECRET=your-app-secret
-PUSHSTREAM_API_URL=https://api.pushstream.ceylonitsolutions.online
+PUSHSTREAM_API_URL=https://api.pushstream.online
 ```
 
-### 4. Use in Your Code
+## Usage
 
 ```php
 use PushStream\Laravel\PushStreamFacade as PushStream;
 
-// Publish event
-PushStream::publish('orders', 'order.created', [
+PushStream::publish('public-orders', 'order.created', [
     'order_id' => 123,
-    'amount' => 99.99
+    'amount' => 99.99,
 ]);
 ```
 
----
+## Notes
 
-## 🔧 How It Works
+- Laravel auto-discovery is enabled through `composer.json`.
+- This package is for trusted server environments.
+- Do not expose `PUSHSTREAM_APP_SECRET` to browsers or mobile apps.
 
-### Auto-Discovery (Laravel 11+)
-
-Laravel automatically discovers and registers:
-- Service Provider: `PushStreamServiceProvider`
-- Facade: `PushStream`
-
-### Manual Registration (Laravel < 11)
-
-Add to `config/app.php`:
-
-```php
-'providers' => [
-    PushStream\Laravel\PushStreamServiceProvider::class,
-],
-
-'aliases' => [
-    'PushStream' => PushStream\Laravel\PushStreamFacade::class,
-],
-```
-
----
-
-## ✅ Verification
-
-Test the installation:
-
-```bash
-# Check if config is published
-ls config/pushstream.php
-
-# Test in tinker
-php artisan tinker
->>> config('pushstream.app_id')
-```
-
----
-
-## 📚 Next Steps
-
-See [README.md](README.md) for full API documentation and examples.
+See [README.md](README.md) for the current signing contract and API usage.

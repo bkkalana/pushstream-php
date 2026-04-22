@@ -7,7 +7,7 @@
     "authors": [
         {
             "name": "Ceylon IT Solutions",
-            "email": "support@ceylonitsolutions.online"
+            "email": "support@pushstream.online"
         }
     ],
     "require": {
@@ -24,6 +24,9 @@
         "psr-4": {
             "PushStream\\Tests\\": "tests/"
         }
+    },
+    "scripts": {
+        "test": "@php tests/PushStreamTest.php"
     },
     "extra": {
         "laravel": {

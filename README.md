@@ -1,21 +1,6 @@
-# PushStream PHP SDK (`sdks` Edition)
+# PushStream PHP SDK
 
-PHP SDK for PushStream event publishing, batch publishing, and channel auth signature generation.
-
-## Source
-
-- File: `sdks/pushstream-php/src/PushStream.php`
-- Class: `PushStream\PushStream`
-
-## Compatibility
-
-This SDK matches current PushStream protocol:
-
-- Event endpoint: `POST /api/apps/{app_id}/events`
-- Batch endpoint: `POST /api/apps/{app_id}/batch_events`
-- Publish auth header: `Authorization: {app_id}:{signature}`
-- Batch `data` normalized as JSON string
-- Channel auth result format: `{app_id}:{signature}`
+Server-side PHP SDK for PushStream event publishing, batch publishing, channel auth payload generation, and webhook signature verification.
 
 ## Installation
 
@@ -23,75 +8,72 @@ This SDK matches current PushStream protocol:
 composer require pushstream/pushstream-php
 ```
 
-## Quick Start
+## Configuration
+
+Pass `apiUrl` explicitly or set `PUSHSTREAM_API_URL`.
 
 ```php
-<?php
-
-require 'vendor/autoload.php';
-
 use PushStream\PushStream;
 
-$client = new PushStream('APP_ID', 'APP_KEY', 'APP_SECRET');
-
-$response = $client->publish('orders', 'order.created', ['id' => 1]);
-print_r($response);
-```
-
-## Constructor
-
-```php
-new PushStream($appId, $appKey, $appSecret, $options = [])
-```
-
-Options:
-
-- `apiUrl` (default `https://api.pushstream.ceylonitsolutions.online`)
-
-## API
-
-### `publish($channel, $event, $data, $socketId = null)`
-
-Publish a single event.
-
-### `publishBatch($events)`
-
-Publish multiple events in one request.
-
-Example:
-
-```php
-$client->publishBatch([
-  ['name' => 'order.created', 'channel' => 'orders', 'data' => ['id' => 1]],
-  ['name' => 'order.updated', 'channel' => 'orders', 'data' => ['id' => 1, 'status' => 'paid']],
-]);
-```
-
-### `authorizeChannel($socketId, $channel, $userData = null)`
-
-Generate auth payload for private/presence channels.
-
-Example:
-
-```php
-$auth = $client->authorizeChannel(
-  '123.456',
-  'presence-org-1-chat',
-  ['user_id' => 1001, 'user_info' => ['name' => 'Kamal']]
+$client = new PushStream(
+    'APP_ID',
+    'APP_KEY',
+    'APP_SECRET',
+    ['apiUrl' => 'https://api.pushstream.online']
 );
 ```
 
-### `verifyWebhook($signature, $body)`
+## Publish
 
-Verify webhook signature using app secret.
+```php
+$response = $client->publish('public-orders', 'order.created', ['id' => 1]);
+```
 
-## Security Guidance
+The SDK signs requests with the current PushStream query contract:
+
+- `auth_key`
+- `auth_timestamp`
+- `auth_version`
+- `body_md5`
+- `auth_signature`
+
+## Batch Publish
+
+```php
+$client->publishBatch([
+    ['name' => 'order.created', 'channel' => 'public-orders', 'data' => ['id' => 1]],
+    ['name' => 'order.updated', 'channel' => 'public-orders', 'data' => ['id' => 1, 'status' => 'paid']],
+]);
+```
+
+## Channel Auth
+
+```php
+$auth = $client->authorizeChannel(
+    '123.456',
+    'presence-org-1-chat',
+    ['user_id' => '1001', 'user_info' => ['name' => 'Kamal']]
+);
+```
+
+Returned payload shape:
+
+- `auth` => `{app_key}:{signature}`
+- `channel_data` => JSON string for presence channels
+
+## Webhook Verification
+
+```php
+$valid = $client->verifyWebhook($signature, $rawBody);
+```
+
+## Security Notes
 
 - Keep `APP_SECRET` server-side only.
-- Never expose secret in browser/mobile client code.
+- This SDK is for trusted server environments, not browsers or mobile clients.
 
-## Migration Recommendation
+## Testing
 
-For actively maintained package and cleaner API, use canonical SDK:
-
-- `sdk/pushstream-php/README.md`
+```bash
+composer test
+```
